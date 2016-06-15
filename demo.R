@@ -27,6 +27,9 @@ c - as.Date("2015/11/25")
 # some complicated algorithm
 # Sys.time()-d
 
+# but better to use system.time( < your stuff here > )
+# system.time( for (i in 1:10000) { do.simulation(parm1,parm2) })
+
 # factors - will be covered with vectors
 
 # R is technically an object-oriented language, so all sorts of objects can exist from these building blocks
@@ -118,9 +121,19 @@ g
 g.1
 # ordered factors exist for ordinal variables, not covered here
 
+# functions exist as in other languages
+do.it <- function(x,y=1) {
+  return(x+y)
+}
+do.it(1)
+do.it(x=1)
+do.it(1,2)
+do.it(1,y=2)
+do.it(y=2) # error
 
 # clean up
-rm(a,b,c,d,e,f,g,g.1)
+rm(a,b,c,d,e,f,g,g.1,do.it) # note we didn't have to clean up x,y - local scoping usually works as expected
+                            #   at least in the beginning
 
 
 # simple aggregated statistics --------------------------------------------
@@ -167,9 +180,21 @@ iris[[1]] # almost never used
 iris$Sepal.Width[1]
 
 # basic exploration, the hard way
+mean(iris$Sepal.Width)
+cor(iris$Sepal.Width,iris$Sepal.Length)
+cor(iris[,1:4])
+
 tapply(iris$Sepal.Width,iris$Species,mean)
 tapply(iris$Sepal.Width,iris$Species,sd)
 
+# functions work on data frames, too
+add_1_to_col_1 <- function(df) {
+  df[,1] <- df[,1]+1
+  return(df)
+}
+
+iris2 <- add_1_to_col_1(iris)
+head(iris); head(iris2)
 
 # brushing over importing data --------------------------------------------
 
@@ -212,7 +237,11 @@ mean_stat <- iris %>%
             sd_Sepal_Width=sd(Sepal.Width),sd_Sepal_Length=sd(Sepal.Length))
 mean_stat
 
-
+# getting a grouped correlation matrix is a little harder, but not too bad:
+cor_stat <- iris %>% 
+  group_by(Species) %>% 
+  do(data.frame(cor(.[,1:4])))
+cor_stat
 
 # data analysis with ggplot2 ----------------------------------------------
 
@@ -242,3 +271,17 @@ plot2 + geom_point(aes(shape=Species)) + geom_smooth(aes(colour=Species),method=
 plot2 + geom_point() + geom_smooth(method="lm") + facet_wrap(~Species)
 
 # making plots pretty/publication ready with labels, annotations, etc. is hard and not covered here
+
+
+# basic least squares -----------------------------------------------------
+
+fit1 <- lm(Sepal.Length~Sepal.Width,data=iris)
+fit1
+coef(fit1)
+summary(fit1)
+plot(fit1) # uses base plotting system
+ # base plot system, which this uses, is good for a lot of things
+
+iris %>% 
+  group_by(Species) %>% 
+  do(data.frame(t(coef(lm(Sepal.Length~Sepal.Width,data=.)))))

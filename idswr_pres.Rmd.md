@@ -46,19 +46,15 @@ http://cran.r-project.org (browse or use [Task views](https://cran.r-project.org
 
 This talk uses `readr`, `dplyr`, and `ggplot2`. Use `install.packages(c("dplyr","ggplot2","readr"))` with an internet connection to get them.
 
-Making packages available
-========================================================
-
-Use `library(package)` to make it available in your R environment.
 
 Getting help
 ========================================================
 
 - Help system: `F1`, `?`, and `help.search` - contains technical details of commands, options, etc. and some simple examples
 - Vignettes - comes with some packages: `browseVignettes("package")` - contain more sophisticated examples, use cases, and practical explanations, but not all packages have them
-- Cross-validated 
-- http://www.r-bloggers.com
 - books (both R help and specialized packages such as ggplot2)
+- Cross Validated - http://stats.stackexchange.com - has an R tag
+- [R bloggers](http://www.r-bloggers.com) - aggregates material from people blogging about R (including me!)
 - and much, much more.
 
 Demo
@@ -70,3 +66,5 @@ Where to go for more
 
 - [David Langer](http://www.youtube.com/watch?v=32o0DnuRjfg) - David Langer is an IT professional from Microsoft, and has a 5 part series
 - [Johns Hopkins data science program](https://www.coursera.org/specializations/jhu-data-science) - Good if you have some cash and want a high quality introduction to data science with R and best practices
+
+- there's a lot more on YouTube and in data science specializations on Coursera, edX, etc.
