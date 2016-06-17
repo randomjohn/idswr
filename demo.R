@@ -6,10 +6,13 @@ help("data.frame")
 help.search("data frame")
 apropos("data.fr")
 
+install.packages(c("dplyr","ggplot2"))
+
 # atomic values -----------------------------------------------------------------
 
 # scalars - covers integers and floats but we'll skip that detail
 a <- 2
+a
 2+2
 3+a
 
@@ -70,6 +73,7 @@ a[-(2:3)]
 
 a.1 <- 1:5 # what's behind this colon notation
 a.1
+2:10
 
 # you can create vectors of strings, too
 e <- c("foo","bar","bat")
@@ -86,16 +90,16 @@ f[[3]]
 # flow control
 
 for (i in c(2,3,4)) {
-  print(i,a[i])
+  print(paste(i,a[i]))
 }
 # for is sometimes, but not very commonly used, because of vectorization or sophisticated subscripting
 
 a[2:4]
 
 # instead of
-# for (i in 2:4) {
-#   a[i] <- a[i]+1
-# }
+for (i in 2:4) {
+  a[i] <- a[i]+1
+}
 # use
 a[2:4] <- a[2:4]+1
 a
@@ -108,6 +112,7 @@ for (i in 1:5) {
 }
 # or
 print(a[a>3])
+
 # you can do all sorts of fancy subscripting
 a[b>=6]
 # what's going on?
@@ -139,6 +144,7 @@ rm(a,b,c,d,e,f,g,g.1,do.it) # note we didn't have to clean up x,y - local scopin
 # simple aggregated statistics --------------------------------------------
 
 # the hard way
+
 # define some groups
 grp <- rep(c(1,2),4) # rep is one way to create structured vectors
 grp
@@ -168,13 +174,14 @@ str(iris)
 # the data frame is the central object of a data analysis
 
 # quick analysis
-head(iris)
+head(iris,10)
 summary(iris)
 # subscripting
 iris[35,1]
 iris[35,]
 iris[,1]
 iris$Sepal.Length
+iris$Petal.Length
 iris[[1]] # almost never used
 
 iris$Sepal.Width[1]
@@ -282,6 +289,26 @@ summary(fit1)
 plot(fit1) # uses base plotting system
  # base plot system, which this uses, is good for a lot of things
 
+# grouped linear models can be done with dplyr and the do() function, but is a little difficult
 iris %>% 
   group_by(Species) %>% 
   do(data.frame(t(coef(lm(Sepal.Length~Sepal.Width,data=.)))))
+
+# the broom package makes grouped linear regressions easier, and is more powerful
+library(broom)
+iris %>% 
+  group_by(Species) %>% 
+  do(tidy(lm(Sepal.Length~Sepal.Width,data=.)))
+
+iris %>% 
+  group_by(Species) %>% 
+  do(glance(lm(Sepal.Length~Sepal.Width,data=.)))
+
+# more efficient (based on broom + dplyr vignette)
+reg <- iris %>% 
+  group_by(Species) %>% 
+  do(fit=lm(Sepal.Length~Sepal.Width,data=.))
+
+reg %>% tidy(fit) # see all the coefficients
+reg %>% glance(fit) # see all the regression summaries
+reg %>% augment(fit) # see the observation statistics
